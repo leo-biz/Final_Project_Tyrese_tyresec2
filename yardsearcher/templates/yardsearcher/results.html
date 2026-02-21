@@ -19,11 +19,11 @@
             <div class="container mx-auto px-4 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded bg-primary flex items-center justify-center text-lg lg:2xl shadow-lg">
+                        <div class="w-12 h-12 rounded bg-primary flex items-center justify-center text-lg lg:text-2xl shadow-lg">
                             🔧
                         </div>
                         <div>
-                            <h1 class="text-lg lg:2xl font-bold text-foreground tracking-tight">
+                            <h1 class="text-lg lg:text-2xl font-bold text-foreground tracking-tight">
                                 Junkyard <span class="text-primary">Finder</span>
                             </h1>
                             <p class="text-sm text-muted-foreground">Multi-yard inventory search</p>
@@ -163,7 +163,14 @@
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
                                         <div>
-                                            <h3 class="text-base lg:2xl font-bold text-foreground mb-1">
+                                            <p class="text-primary/70 text-xs text-start font-bold text-foreground mb-1">
+                                                {% if yard.num_results == 1 %}
+                                                1 Vechicle
+                                                {% else %}
+                                                {{ yard.num_results }} Vechicles
+                                            {% endif %}
+                                            </p>
+                                            <h3 class="text-lg lg:text-2xl font-bold text-foreground mb-1">
                                                 {{ yard.meta.name|capfirst }}
                                             </h3>
                                             <div class="flex items-center gap-2 text-sm text-muted-foreground">
@@ -369,12 +376,7 @@
                                             {% endfor %}
                                         </tbody>
                                     </table>
-                                </div>
-                                <div class="bg-muted/30 px-6 py-4 border-t border-border">
-                                    <p class="text-sm text-muted-foreground">
-                                        Found <span class="font-semibold text-foreground">{{ yard.num_results }}</span> vehicles from {{ yard.meta.name|capfirst }}
-                                    </p>
-                                </div>
+                                </div> 
                             </div>
                         </div>
                     {% endfor %}
