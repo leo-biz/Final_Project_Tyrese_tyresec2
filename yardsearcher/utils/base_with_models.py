@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 import io
-import pandas as pd
 import re
 import time
 import cProfile

@@ -1,6 +1,6 @@
 arrow==1.4.0
 asgiref==3.8.1
-backports.zoneinfo==0.2.1
+backports.zoneinfo;python_version<"3.9"
 beautifulsoup4==4.14.3
 binaryornot==0.4.4
 certifi==2025.11.12
@@ -18,8 +18,7 @@ lxml==6.0.2
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
-numpy
-pandas==2.0.3
+numpy==1.26.4
 pillow==10.4.0
 pygments==2.19.2
 python-dateutil
