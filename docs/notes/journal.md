@@ -1,5 +1,110 @@
 # Dev Journal
 
+
+## 3/1/2026
+
+On the 22nd, I introduced Scraphounds to 3 guys @ Autozone. I asked for feedback and they asked if there was a feature to leave reviews. 
+
+Implementing said feature would consist of: 
+*   Developing `Review` model 
+*   Developing a ListView binded to  `POST /reviews`
+*   Developing a template 
+
+### Objectives
+#### Developing `Review` model 
+
+a review consists of a rating, feedback, date created, email, keep_posted. Users are not considered in this version of the application. Not until someone specifically says so in the feedback. 
+
+(it'd be cool to compile all feedback into a list for OpenAI to prioritze implentation order based on relevancy)
+
+#### Using gear icons as review scale
+
+I don't fancy the HTML5 provided slides or number inputs. I'd rather users click gear svgs to give a rating. 
+
+I'll do this in Javascript by first subsituting 5 gear svgs with the rating input.
+The appearance will be controlled in CSS using `.rating-icon`
+These svgs will have number values (1-5) associated with them in their `data-rating` attribute
+Those number values will get passed:
+-   into `update_ratings(new_rating=int)` that triggers when clicked
+-   into `hover_prior_ratings(new_rating=int)` that partially highlights prior ratings
+
+
+##### Logic for update_ratings(new_rating)
+
+if current_rating != new_rating
+1. Turn off all ratings 
+2. Illuminate up to new_rating
+3. set value of hidden rating input for form 
+
+
+## 2/28/26
+
+### Objectives
+
+
+#### [x] Skip over junkyards that don't successfully refresh
+
+Implemented a try-catch on `utils/refresh_inventories.py`
+
+#### [x] Create model to track scrape events 
+
+I modified the Lkq scraper work with concurrency but violated the TSL/ SSL protocol. I learned that faster isn't always the most reliable long-term because I'm being blocked on a connection-level:
+
+```
+# yardsearcher/management/commands/refresh_inventories.py 
+Can't scrape: HTTPSConnectionPool(host='www.pyp.com', port=443): Max retries exceeded with url: /DesktopModules/pyp_vehicleInventory/getVehicleInventory.aspx?page=1&filter=&store=1582 (Caused by SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1129)')))
+
+```
+
+I intend on adding this command to a scheduler. In the event that a junkyard isn't updated, I must see the status, the junkyard ID, the reason for failure, and the date. I'll also log the successful scrapes in the same model.
+
+##### Scrape model 1.0.0
+-   status: Success or Fail('1','0') 
+-   error: error message is blank text
+-   junkyardID: foreign key to Junkyard
+-   refresh_date
+
+
+## 2/25/26 
+
+### Objectives
+
+#### Updating lkq scraper to move faster
+
+The refresh command synchronously calls upon every yard scraper. The LKQ Scrapers (`LKQSearch`) move slower than the other scrapers because of how I handle a junkyard's use of pagination [to display their data].
+
+##### cProfile results
+
+I ran a cProfile report on this scraper using blue island parameters and an empty search query (as to return the whole inventory), and the report says:
+
+*   `9708253 function calls (9706638 primitive calls) in 136.092 seconds`
+*   `1    0.000    0.000  136.092  136.092 lkq.py:44(fetch_inventory)`
+*   `69    0.000    0.000  136.092    1.972 lkq.py:52(is_page_valid)`
+*   `69    0.002    0.000  136.092    1.972 lkq.py:58(fetch_inventory_html)`
+
+`fetch_inventory()` while-looped `is_page_valid()` 69 times. is_page_valid pretended to be a simple bool-returning predicate but it does network I/O, parses HTML, and mutates state of class attributes (b/c it triggers fetch_inventory_html). That while-loop essentially says  "fetch_inventory_html on this page (~2s), then fetch_inventory_html on the next page (~2s), and so on until fetch_inventory_html comes back empty. This sequential execution is responsible of the bottleneck.
+
+##### Introducing ThreadPoolExtractor
+
+The original implementation of LKQSearch was intentionally simple: iterate through paginated inventory pages, fetch HTML, parse vehicle cards, and append structured results into a shared list. This worked reliably but was slow — each page request blocked the entire process.
+
+As the page count grew (≈80 pages per yard), network latency became the dominant cost.
+
+At this stage, the primary goal was throughput, not sophistication.
+
+I replaced the while-loop from `fetch_inventory` with the ThreadPoolExtractor code and learned that I would need to use one of two methods (provided by `Executor`):
+
+- [`Executor.map()`](https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.map)
+- `Executor.submit()`
+
+Using the first allows me to asnynchronously call a *fn* over iterables / list . The iterables will be a range of page numbers from 1-> 80 (lkq stops at 68 according to the cProfile results above). It's best to give the workers everything they need to process a page (b/c they may try many pages at once)
+
+Since each page may have a list of results, a worker would need to make a request to the page, and extract the list of results from that request's response. For these reasons, I gave the workers:
+
+- fetch_page_results(page_number): to request page level results and return as list of tuples [('2018', 'CHEVROLET', 'SONIC', 'Black', '1G1JD5SB1J4120381', 'GM', '48', '20', '1582-82961', '11/7/2025')]
+
+This works for concurrency because the workers are not concerned about shared mutable states. Unforunately, this led to an SSL error because because of how the requests hit concurrently in complete disregard of *politeness*
+
 ## 2/17/26
 
 ### Objectives

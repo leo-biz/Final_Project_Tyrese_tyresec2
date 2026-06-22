@@ -1,0 +1,36 @@
+/* Gear Icons for ratings */
+svg.rating-icon{
+    width:4rem;
+    max-height: 4rem;
+    transition: fill 0.3s ease;
+    /* Grey out non-active ones */
+    &:hover, &.hovered {
+        cursor: pointer;
+        fill:hsl(22 75% 50% / 0.25);
+    }
+    &:not(.hovered){
+        fill: hsl(218 15% 12% / var(--tw-bg-opacity, 1));
+    }
+    
+    /* Illuminate for active icons */
+    &.active {
+        fill:hsl(22 75% 50% / var(--tw-bg-opacity, 1))
+    }
+    
+}
+
+/*  Scale tags */
+#scale_tags p{
+    flex:1;
+    /* left align left-most tag */
+    &:nth-child(1) { text-align:left; }
+    /* center align center tag */
+    &:nth-child(2) { text-align:center; }
+    /* right align right-most tag */
+    &:nth-child(3) { text-align:right; }
+}
+
+/*  form tuhat appears after clicking rating icon */
+div#rating_form_div{
+    transition:opacity 0.5s ease;
+}

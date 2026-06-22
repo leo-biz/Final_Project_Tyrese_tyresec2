@@ -8,9 +8,10 @@ var selectedJunkyard = null;
 
 function initMap(){
     map = L.map('map').setView(center = [AVG_LAT, AVG_LONG], 9);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map); 
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        minZoom: 2,
+        attribution: '© <a href="https://carto.com/attributions">CARTO</a>'
+      }).addTo(map);
     createMarkers();
 }
 function removeMarkers(){

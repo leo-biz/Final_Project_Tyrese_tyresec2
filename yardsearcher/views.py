@@ -1,18 +1,19 @@
 import json
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http.response import HttpResponse, JsonResponse
 from yardsearcher.utils.jup import *
 from yardsearcher.utils.lkq import *
-from django.views.generic import View
+from django.views.generic.base import TemplateView
 from yardsearcher.utils.queries import *
 from django.db.models import Q, Count
 from django.db.models.functions import Lower
-
 from django.forms.models import model_to_dict
 from yardsearcher.models import (
 	Vehicle,
-	Junkyard
+	Junkyard,
+	Review,
 )
+from yardsearcher.forms import ReviewForm
 
 # For API Use
 VALID_FIELDS = ['year', 'make', 'model', 'vin', 'row','color', 'space', 'available_date']
@@ -169,3 +170,22 @@ def api_sort_table(request):
 		except AssertionError as e:
 			return JsonResponse({"ok": False, "msg":"Sort Table API needs valid q, order, sortBy, and yardId URL parameters "}, safe=False)
 		
+class ReviewView(TemplateView):
+    template_name = "yardsearcher/feedback.html"
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['form'] = ReviewForm
+        return context
+    
+    def post(self, *args, **kwargs):
+        form = ReviewForm(self.request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            Review.objects.create(
+				feedback=cleaned_data['feedback'],
+				email=cleaned_data['email'],
+				rating=cleaned_data['rating'],
+			)
+            return redirect('home_urlpattern')
+
+        return render(self.request, self.template_name, {'form': form})

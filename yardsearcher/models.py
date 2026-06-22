@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 import datetime
 # Create your models here.
@@ -68,4 +69,30 @@ class UserAllowedYard(models.Model):
     
     def __str__(self):
         return f'{self.user} allowed {self.junkyard}'
+
+class Scrape(models.Model):
+    STATUSES = (
+        ('1','SUCCESS'),
+        ('0','FAILED'),
+    )
+    junkyard = models.ForeignKey(Junkyard, related_name='scrapes', on_delete=models.CASCADE)
+    status = models.CharField(max_length=1, choices=STATUSES, editable=False)
+    error = models.TextField(blank=True)
+    scraped_at = models.DateTimeField(auto_now=True)
     
+    def __str__(self):
+        return f'[{"SUCCESS" if self.status == "1" else "FAILED"}] {self.junkyard.name} at {self.scraped_at}'
+
+class Review(models.Model):
+    email = models.EmailField(max_length=100)
+    feedback = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now=True)
+    rating = models.FloatField(
+        validators=[
+            MinValueValidator(0.0),
+            MaxValueValidator(5.0),
+        ]
+    )
+    
+    def __str__(self):
+        return f'{self.email.split("@")[0]} gave us {self.rating}/5 on {self.created_at}'
