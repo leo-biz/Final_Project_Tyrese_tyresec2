@@ -17,7 +17,7 @@ class Jup(YardSearch):
     def fetch_inventory(self,conditionals):
         make = conditionals['make'].upper()
         model  = conditionals['model'].upper()
-        self.update_headers({f"path": "/inventory/?make={make}&model={model}"})
+        self.update_headers({"path": f"/inventory/?make={make}&model={model}"})
         # Jup requires make & model params
         super().set_url(f"https://www.jolietupullit.com/inventory/?make={make}&model={model}")
         inventory_html_soup = super().fetch_inventory()
