@@ -19,7 +19,7 @@ class YardSearch:
         self.searched_query = self.replace_em_dashes(query_str)
         self.queries = self.searched_query.strip().split(',')
         self.base_headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0",
         }
         self.results = []
         self.base_url = ''
