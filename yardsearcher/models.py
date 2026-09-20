@@ -40,6 +40,7 @@ class Vehicle(models.Model):
     vin = models.CharField(max_length=17, blank=True)
     available_date = models.DateField()
     created_at = models.DateTimeField(auto_now=True)
+    notes = models.TextField(default="", blank=True)
     
     class Meta:
         constraints = [models.UniqueConstraint(fields=['junkyard', 'junkyard_identifier'], name='unique_vehicle')]
