@@ -157,7 +157,9 @@ class YardSearch:
         Returns prettified version of junkyard site HTML (BeautifulSoup)
         """
         time.sleep(random.uniform(1.0,2.0))
-        response = self.session.get(self.base_url, headers=self.base_headers, params=self.base_params)
+        response = self.session.get(self.base_url,headers=self.base_headers, params=self.base_params)
+        if response.status_code !=200:
+            raise ValueError(f"Response status code = {response.status_code}; headers = {self.base_headers}; params = {self.base_params}; base url = {self.base_url}; request headers = {response.request.headers} ; request url = {response.request.url}")
         soup = BeautifulSoup(response.text, "lxml")
         return soup
 
