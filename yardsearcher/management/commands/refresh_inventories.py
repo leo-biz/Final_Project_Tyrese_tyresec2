@@ -5,8 +5,10 @@ from django.db.models import Q
 from yardsearcher.utils.known_yards import KNOWN_YARDS as KNOWN_YARDS
 from yardsearcher.utils.extractors import *
 
-def get_junkyard_id(yard) ->int:
-    return Junkyard.objects.get(address=yard['address']).pk or None
+def get_junkyard_id(yard: dict)->int:		
+	if not Junkyard.objects.filter(address=yard['address']).exists():
+		raise ValueError(f"Address of junkyard not found")
+	return Junkyard.objects.get(address=yard['address']).pk 
 
 class Command(BaseCommand):
 	help = "Refreshes Vehicle Table"
@@ -22,20 +24,33 @@ class Command(BaseCommand):
 		for i,yard in enumerate(KNOWN_YARDS):
 			error = ""
 			status = 0
+			stage = "initial"
+			yard['id'] = 0
 			try:
 				self.stdout.write(f"\n[{i+1}/{len(KNOWN_YARDS)}] {yard['name']}'s vehicles")
+
+				stage = "getting junkyard id"
 				yard['id'] = get_junkyard_id(yard)
+
+				stage = "setting up scraper"
 				scraper = yard['class']("") if 'params' not in yard.keys() else yard['class']("", params=yard['params'])
+
+				stage = "scraping"
 				scraper.handle_queries()
+
+				stage = "updating db"
 				self.cache_scraper_results(scraper.results_as_list(), yard)
-				self.stdout.write(self.style.SUCCESS(f"-\tran successfully"))
+
+				stage = "complete"
 				status = 1
+				self.stdout.write(self.style.SUCCESS(f"-\tran successfully"))
 			except Exception as e:
-				error = e
-				self.stdout.write(self.style.ERROR(f"-\tCan't scrape: {error}"))
+				error = str(e)
+				self.stdout.write(self.style.ERROR(f"-\t trouble {stage} for {yard['name']}: {error}"))
+
 				continue
 			finally:
-				self.log_scrape_event(yard=yard, error=error, status=status)
+				self.log_scrape_event(junkyard_id=yard['id'], error=error, status=status)
 
 				
 	def cache_scraper_results(self, results, yard):
@@ -91,6 +106,6 @@ class Command(BaseCommand):
 			self.stdout.write(f"\t{len(different_identifiers)} removed from site")
 			different_identifiers.delete()
 		
-	def log_scrape_event(self,yard, status, error=""):
-		Scrape.objects.create(junkyard_id=yard['id'], error=error, status=status)
+	def log_scrape_event(self, junkyard_id, status, error=""):
+		Scrape.objects.create(junkyard_id=junkyard_id, error=error, status=status)
 		
