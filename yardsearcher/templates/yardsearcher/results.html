@@ -3,14 +3,6 @@
     {% block extra_links %}
     <link rel="stylesheet" href="{% static 'css/results.css' %}?v={{tz}}" />
     <link rel="stylesheet" href="{% static 'css/leaflet.css' %}?v={{tz}}" />
-
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    
     {% endblock %}
     {% block main_content %}
         <!-- Search Bar -->
@@ -133,22 +125,22 @@
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
                                         <div>
-                                            <h3 class="text-base lg:2xl font-bold text-foreground mb-1">
+                                            <h3 class="text-base lg:text-2xl font-bold text-foreground mb-1">
                                                 {{ yard.meta.name|capfirst }}
                                             </h3>
                                             <div class="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <span class="hidden md:visible">📍</span>
+                                                <span class="hidden md:inline">📍</span>
                                                 {{ yard.meta.address|capfirst }}, {{ yard.meta.city|capfirst }}, {{ yard.meta.state }}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-3">
-                                        <div class="hidden md:visible px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-base font-medium">
+                                        <div class="hidden md:flex px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-base font-medium">
                                             <span class="hidden mr-2">🚗</span>
                                             {% if yard.num_results == 1 %}
-                                                1 Vechicle
+                                                1 Vehicle
                                             {% else %}
-                                                {{ yard.num_results }} Vechicles
+                                                {{ yard.num_results }} Vehicles
                                             {% endif %}
                                         </div>
                                         <svg id="chevron-{{yard.meta.junkyard_id}}" class="w-6 h-6 transition-transform transition-fill chevron" fill="none" stroke="currentColor"   viewBox="0 0 640 640" style="transform: rotate(-180deg);">

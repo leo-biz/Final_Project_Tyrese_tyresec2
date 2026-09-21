@@ -12,7 +12,7 @@ svg.chevron{
     transition:fill 0.3 linear, transform 0.5s ease-in;
 }
 svg.chevron.chevron-opened, th[data-order=""] > svg > path.sort-caret:first-child , th[data-order="-"] > svg > path.sort-caret:last-child{
-    fill: hsl(22 75% 50% / var(--tw-bg-opacity, 1));
+    fill: #f2b84b;
 }
 svg.chevron:not(.chevron-opened), th[data-order=""] > svg > path.sort-caret:last-child , th[data-order="-"] > svg > path.sort-caret:first-child, th[data-isusing="false"] path.sort-caret {
     fill: #65696f!important;

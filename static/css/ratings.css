@@ -6,15 +6,15 @@ svg.rating-icon{
     /* Grey out non-active ones */
     &:hover, &.hovered {
         cursor: pointer;
-        fill:hsl(22 75% 50% / 0.25);
+        fill: rgba(242, 184, 75, 0.25);
     }
     &:not(.hovered){
-        fill: hsl(218 15% 12% / var(--tw-bg-opacity, 1));
+        fill: #18201f;
     }
-    
+
     /* Illuminate for active icons */
     &.active {
-        fill:hsl(22 75% 50% / var(--tw-bg-opacity, 1))
+        fill: #f2b84b;
     }
     
 }
