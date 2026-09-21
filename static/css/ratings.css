@@ -16,7 +16,12 @@ svg.rating-icon{
     &.active {
         fill: rgb(var(--color-primary));
     }
-    
+
+    &:focus-visible {
+        outline: 2px solid rgb(var(--color-primary));
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
 }
 
 /*  Scale tags */
