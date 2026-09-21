@@ -104,25 +104,21 @@
                     {% endif %}
                 </p>
             {% endif %}
+            {% if fetched_yard_data|length > 0 %}
             <div class="flex flex-col lg:grid lg:grid-cols-2 gap-8">
                 <!-- Map Section -->
                 <div class="w-full lg:sticky lg:top-32 self-start">
                     <div class="p-4 bg-card border-2 border-border rounded-lg">
-                        {% if fetched_yard_data|length > 0 %}
-                            <div class="mb-4">
-                                <h2 class="text-xl font-bold text-foreground flex items-center gap-2">
-                                    <span class="text-primary">📍</span>
-                                    Junkyard Locations
-                                </h2>
-                                <p class="text-sm text-muted-foreground mt-1">
-                                    Click markers to view inventory
-                                </p>
-                            </div>
-                            <div id="map" class="h-[500px] lg:h-[600px] rounded-lg z-0 border-2 border-border "></div>
-                        {% else %}
-                            <img src="{% static 'noresult.png'%}"/>
-                            <div id="map" class="hidden "></div>
-                        {% endif %}
+                        <div class="mb-4">
+                            <h2 class="text-xl font-bold text-foreground flex items-center gap-2">
+                                <span class="text-primary">📍</span>
+                                Junkyard Locations
+                            </h2>
+                            <p class="text-sm text-muted-foreground mt-1">
+                                Click markers to view inventory
+                            </p>
+                        </div>
+                        <div id="map" class="h-[500px] lg:h-[600px] rounded-lg z-0 border-2 border-border "></div>
                     </div>
                 </div>
 
@@ -353,8 +349,28 @@
                     {% endfor %}
                 </div>
             </div>
+            {% else %}
+            <div class="flex flex-col items-center text-center gap-4 py-16 px-4 bg-card border-2 border-border rounded-lg">
+                <img src="{% static 'noresult.png' %}" class="w-32 h-32 opacity-80"/>
+                <h2 class="text-xl font-bold text-foreground">No vehicles matched that search</h2>
+                <p class="text-muted-foreground max-w-md">
+                    Try a broader query&mdash;just a make, a model, or a year range&mdash;or start from one of these:
+                </p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="{% url 'results_urlpattern' %}?q=1940-1999" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium no-underline hover:bg-secondary/70 transition-colors">
+                        Cars before 2000
+                    </a>
+                    <a href="{% url 'results_urlpattern' %}?q=2021-2026" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium no-underline hover:bg-secondary/70 transition-colors">
+                        Cars made in last 5 years
+                    </a>
+                    <a href="{% url 'results_urlpattern' %}?q=2016-2026%20ford" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium no-underline hover:bg-secondary/70 transition-colors">
+                        Fords made in last 10 years
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         </div>
-    {% endblock %} 
+    {% endblock %}
     {% block extra_scripts %}
         <!-- Leaflet JS -->
         <script src="{% static 'js/leaflet.js' %}?v={{ tz }}"></script> 
