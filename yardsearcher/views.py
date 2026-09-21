@@ -101,6 +101,8 @@ def results_view(request):
 			'query': query,
 			'total_yards': Junkyard.objects.all().count,
 			'total_vehicles': Vehicle.objects.all().count,
+			'query_yard_count': len(formatted_results),
+			'query_vehicle_count': results.count(),
 			'yard_data_json':{
        			"avg_lat": avg_lat,
 				"avg_long": avg_long,

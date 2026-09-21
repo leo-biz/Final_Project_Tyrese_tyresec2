@@ -93,6 +93,17 @@
 
         <!-- Main Content -->
         <div class="container mx-auto px-4 py-8">
+            {% if query %}
+                <p class="text-sm text-muted-foreground mb-6">
+                    {% if query_vehicle_count > 0 %}
+                        Showing <span class="font-semibold text-foreground">{{ query_vehicle_count }}</span> vehicle{{ query_vehicle_count|pluralize }}
+                        across <span class="font-semibold text-foreground">{{ query_yard_count }}</span> yard{{ query_yard_count|pluralize }}
+                        for &ldquo;{{ query }}&rdquo;
+                    {% else %}
+                        No vehicles found for &ldquo;{{ query }}&rdquo;
+                    {% endif %}
+                </p>
+            {% endif %}
             <div class="flex flex-col lg:grid lg:grid-cols-2 gap-8">
                 <!-- Map Section -->
                 <div class="w-full lg:sticky lg:top-32 self-start">
