@@ -1,5 +1,8 @@
 db.sqlite3
 .DS_STORE
+.env
+.env.*
+!.env.example
 *.pyc
 *.venv
 .search_history.txt

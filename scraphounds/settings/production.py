@@ -1,7 +1,19 @@
+import os
+
+import dj_database_url
+
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'junkyardfinder.blake4it.com']
+
+SECRET_KEY = os.environ["SECRET_KEY"]
+
+
+def env_list(name, default=""):
+    return [value.strip() for value in os.environ.get(name, default).split(",") if value.strip()]
+
+
+ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", ".onrender.com,localhost,127.0.0.1")
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -14,11 +26,16 @@ MIDDLEWARE = [
 ]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = False
-CSRF_TRUSTED_ORIGINS = [
-    "https://junkyardfinder.blake4it.com",
-]
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "https://*.onrender.com")
+
+DATABASES["default"] = dj_database_url.config(
+    conn_max_age=600,
+    conn_health_checks=True,
+    ssl_require=True,
+)
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGGING = {
