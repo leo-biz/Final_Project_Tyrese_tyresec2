@@ -1,41 +1,55 @@
-/* Gear Icons for ratings */
-svg.rating-icon{
-    width:4rem;
-    max-height: 4rem;
-    transition: fill 0.3s ease;
-    /* Grey out non-active ones */
-    &:hover, &.hovered {
-        cursor: pointer;
-        fill: rgb(var(--color-primary) / 0.25);
-    }
-    &:not(.hovered){
-        fill: rgb(var(--color-muted));
-    }
-
-    /* Illuminate for active icons */
-    &.active {
-        fill: rgb(var(--color-primary));
-    }
-
-    &:focus-visible {
-        outline: 2px solid rgb(var(--color-primary));
-        outline-offset: 2px;
-        border-radius: 4px;
-    }
+.rating-button {
+    align-items: center;
+    background: rgb(var(--color-background) / 0.75);
+    border: 2px solid rgb(var(--color-border));
+    border-radius: 0.5rem;
+    color: rgb(var(--color-muted-foreground));
+    display: inline-flex;
+    height: 4rem;
+    justify-content: center;
+    transition: border-color 0.18s ease, color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+    width: 4rem;
 }
 
-/*  Scale tags */
-#scale_tags p{
-    flex:1;
-    /* left align left-most tag */
-    &:nth-child(1) { text-align:left; }
-    /* center align center tag */
-    &:nth-child(2) { text-align:center; }
-    /* right align right-most tag */
-    &:nth-child(3) { text-align:right; }
+.rating-button:hover,
+.rating-button.hovered {
+    border-color: rgb(var(--color-primary) / 0.55);
+    color: rgb(var(--color-primary) / 0.65);
+    cursor: pointer;
+    transform: translateY(-1px);
 }
 
-/*  form tuhat appears after clicking rating icon */
-div#rating_form_div{
-    transition:opacity 0.5s ease;
+.rating-button.active {
+    background: rgb(var(--color-primary) / 0.16);
+    border-color: rgb(var(--color-primary));
+    color: rgb(var(--color-primary));
+}
+
+.rating-button:focus-visible {
+    outline: 3px solid rgb(var(--color-primary) / 0.35);
+    outline-offset: 2px;
+}
+
+.rating-button i {
+    font-size: 1.5rem;
+}
+
+#scale_tags p {
+    flex: 1;
+}
+
+#scale_tags p:nth-child(1) {
+    text-align: left;
+}
+
+#scale_tags p:nth-child(2) {
+    text-align: center;
+}
+
+#scale_tags p:nth-child(3) {
+    text-align: right;
+}
+
+div#rating_form_div {
+    transition: opacity 0.35s ease;
 }

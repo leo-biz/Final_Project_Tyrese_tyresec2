@@ -52,4 +52,37 @@
         --color-border: 226 221 208;
         --color-card: 255 255 255;
     }
+
+    body {
+        background:
+            radial-gradient(circle at 14% -8%, rgb(var(--color-info) / 0.12), transparent 28rem),
+            radial-gradient(circle at 92% 0%, rgb(var(--color-primary) / 0.12), transparent 26rem),
+            rgb(var(--color-background));
+        color: rgb(var(--color-foreground));
+    }
+
+    ::selection {
+        background: rgb(var(--color-primary) / 0.35);
+        color: rgb(var(--color-foreground));
+    }
+}
+
+@layer components {
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+        background: rgb(var(--color-card));
+        color: rgb(var(--color-foreground));
+        border: 1px solid rgb(var(--color-border));
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+    }
+
+    .leaflet-popup-content {
+        margin: 0.75rem 0.875rem;
+    }
+
+    .leaflet-control-zoom a {
+        background: rgb(var(--color-card)) !important;
+        border-color: rgb(var(--color-border)) !important;
+        color: rgb(var(--color-foreground)) !important;
+    }
 }

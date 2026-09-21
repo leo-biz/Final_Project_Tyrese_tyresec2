@@ -49,17 +49,15 @@ function handleMarkerClick(yard) {
 function createPopupContent(yard){
     var suffix = yard.num_results > 1 ?  " vehicles" : " vehicle";
     return `
-        <div class="py-2 min-w[250px]">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="text-lg lg:2xl"></span>
-            </div>
-            <h3 class="font-bold text-base mb-2">${yard.meta.name}</h3>
-            <h6 class="text-sm text-muted-foreground">${yard.meta.address}</h6>
-            <h6 class="text-sm text-muted-foreground mb-2">${yard.meta.city}, ${yard.meta.state}</h6>
-            <div class="flex items-center justify-between pt-2">
+        <div class="min-w-[230px] py-2">
+            <p class="mb-1 text-xs font-bold uppercase tracking-wide text-primary">ScrapHounds yard</p>
+            <h3 class="mb-2 text-base font-bold">${yard.meta.name}</h3>
+            <p class="text-sm text-muted-foreground">${yard.meta.address}</p>
+            <p class="mb-3 text-sm text-muted-foreground">${yard.meta.city}, ${yard.meta.state}</p>
+            <div class="flex items-center justify-between">
                 <button 
                     onclick="showInventory(${yard.meta.junkyard_id})"
-                    class="text-sm w-full px-3 py-1 border-2 border-orange text-primary rounded hover:bg-primary/90 hover:text-white transition-colors"
+                    class="w-full rounded-md border-2 border-primary px-3 py-2 text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
                     See ${yard.num_results + suffix} 
                 </button>
@@ -70,24 +68,23 @@ function createPopupContent(yard){
 
 function createMarkerIcon(isSelected = false) {
     const size = isSelected ? 48 : 40;
-    const emoji = '🔧';
     
     return L.divIcon({
         className: 'custom-marker',
         html: `
             <div style="
-                background: linear-gradient(135deg, hsl(22, 75%, ${isSelected ? '60' : '50'}%), hsl(35, 80%, ${isSelected ? '65' : '55'}%));
+                background: rgb(var(--color-primary));
                 width: ${size}px;
                 height: ${size}px;
-                border-radius: 50% 50% 50% 0;
+                border-radius: 12px 12px 12px 0;
                 transform: rotate(-45deg);
-                border: ${isSelected ? '4' : '3'}px solid white;
-                box-shadow: ${isSelected ? '0 0 20px rgba(230, 104, 41, 0.8), 0 6px 16px rgba(0, 0, 0, 0.5)' : '0 4px 12px rgba(0, 0, 0, 0.4)'};
+                border: ${isSelected ? '4' : '3'}px solid rgb(var(--color-card));
+                box-shadow: ${isSelected ? '0 0 0 6px rgb(var(--color-primary) / 0.2), 0 10px 24px rgba(0, 0, 0, 0.35)' : '0 8px 20px rgba(0, 0, 0, 0.28)'};
                 display: flex;
                 align-items: center;
                 justify-content: center;
             ">
-                <span style="transform: rotate(45deg); font-size: ${isSelected ? '24' : '20'}px;">${emoji}</span>
+                <span style="transform: rotate(45deg); color: rgb(var(--color-primary-foreground)); font-weight: 800; font-size: ${isSelected ? '14' : '12'}px;">SH</span>
             </div>
         `,
         iconSize: [size, size],

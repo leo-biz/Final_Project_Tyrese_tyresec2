@@ -6,7 +6,7 @@
     {% endblock %}
     {% block main_content %}
         <!-- Search Bar -->
-        <div class="sticky top-0 z-40 bg-card/95 backdrop-blur-sm border-b border-border">
+        <div class="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-sm">
             <div class="container mx-auto px-4 py-6">
                 <div class="flex gap-3 items-center">
                     <div class="relative flex-1">
@@ -15,9 +15,9 @@
                                 type="text"
                                 id="search-input"
                                 name="q"
-                                placeholder="Search by make, model, or year..."
+                                placeholder="Search by year, make, model, or range..."
                                 value="{{query}}"
-                                class="w-full pl-4 pr-12 h-14 text-base bg-background border-2 border-border rounded-lg focus:border-primary focus:outline-none transition-colors text-foreground"
+                                class="h-14 w-full rounded-lg border-2 border-border bg-background pl-4 pr-12 text-base text-foreground transition-colors focus:border-primary focus:outline-none"
                                 required
                             />
                             <button
@@ -35,7 +35,7 @@
                         id="filters-toggle"
                         type="button"
                         onclick="toggleFiltersPanel()"
-                        class="h-14 px-6 bg-muted border-2 border-border text-foreground rounded-lg hover:bg-muted/80 transition-colors font-semibold"
+                        class="h-14 rounded-lg border-2 border-border bg-muted px-5 font-semibold text-foreground transition-colors hover:bg-muted/80 sm:px-6"
                     >
                         <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
@@ -61,7 +61,8 @@
                                 Clear All
                             </button>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <p class="mb-5 text-sm text-muted-foreground">Narrow the results already loaded on this page.</p>
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                             <div>
                                 <label for="filter-year" class="block text-foreground font-semibold mb-2">Year</label>
                                 <input
@@ -69,7 +70,7 @@
                                     id="filter-year"
                                     oninput="applyFilters()"
                                     placeholder="e.g., 2020"
-                                    class="w-full px-4 py-2 bg-background border-2 border-border rounded-lg focus:border-primary focus:outline-none"
+                                    class="w-full rounded-lg border-2 border-border bg-background px-4 py-2 text-foreground focus:border-primary focus:outline-none"
                                 />
                             </div>
                             <div>
@@ -79,7 +80,7 @@
                                     id="filter-make"
                                     oninput="applyFilters()"
                                     placeholder="e.g., Ford"
-                                    class="w-full px-4 py-2 bg-background border-2 border-border rounded-lg focus:border-primary focus:outline-none"
+                                    class="w-full rounded-lg border-2 border-border bg-background px-4 py-2 text-foreground focus:border-primary focus:outline-none"
                                 />
                             </div>
                             <div>
@@ -89,7 +90,7 @@
                                     id="filter-model"
                                     oninput="applyFilters()"
                                     placeholder="e.g., F-150"
-                                    class="w-full px-4 py-2 bg-background border-2 border-border rounded-lg focus:border-primary focus:outline-none"
+                                    class="w-full rounded-lg border-2 border-border bg-background px-4 py-2 text-foreground focus:border-primary focus:outline-none"
                                 />
                             </div>
                         </div>
@@ -115,14 +116,14 @@
             <div class="flex flex-col lg:grid lg:grid-cols-2 gap-8">
                 <!-- Map Section -->
                 <div class="w-full lg:sticky lg:top-32 self-start">
-                    <div class="p-4 bg-card border-2 border-border rounded-lg">
+                    <div class="rounded-lg border-2 border-border bg-card p-4 shadow-soft">
                         <div class="mb-4">
-                            <h2 class="text-xl font-bold text-foreground flex items-center gap-2">
-                                <span class="text-primary">📍</span>
-                                Junkyard Locations
+                            <h2 class="flex items-center gap-2 text-xl font-bold text-foreground">
+                                <i class="bi bi-geo-alt-fill text-primary" aria-hidden="true"></i>
+                                Yard Locations
                             </h2>
                             <p class="text-sm text-muted-foreground mt-1">
-                                Click markers to view inventory
+                                Select a marker to jump into that yard's inventory.
                             </p>
                         </div>
                         <div id="map" class="h-[500px] lg:h-[600px] rounded-lg z-0 border-2 border-border "></div>
@@ -133,33 +134,33 @@
                 <div id="inventory-container" class="space-y-6">
                     {% for yard in fetched_yard_data %}
                     
-                        <div id="inventory-{{ yard.meta.junkyard_id }}" class="overflow-hidden border-2 rounded-lg transition-all duration-300 scroll-mt-8 border-border hover:border-primary/50">
+                        <div id="inventory-{{ yard.meta.junkyard_id }}" class="overflow-hidden rounded-lg border-2 border-border bg-card shadow-soft transition-all duration-300 scroll-mt-28 hover:border-primary/60">
                             <!-- Header -->
-                            <div class="bg-gradient-to-r from-card to-muted p-4 cursor-pointer select-none" onclick="toggleTable({{ yard.meta.junkyard_id }})">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-4">
+                            <div class="cursor-pointer select-none bg-gradient-to-r from-card to-muted p-4" onclick="toggleTable({{ yard.meta.junkyard_id }})">
+                                <div class="flex items-center justify-between gap-4">
+                                    <div class="min-w-0 flex items-center gap-4">
+                                        <span class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-secondary text-info sm:flex">
+                                            <i class="bi bi-buildings" aria-hidden="true"></i>
+                                        </span>
                                         <div>
-                                            <h3 class="text-base lg:text-2xl font-bold text-foreground mb-1">
+                                            <h3 class="mb-1 text-lg font-extrabold text-foreground lg:text-2xl">
                                                 {{ yard.meta.name|capfirst }}
                                             </h3>
-                                            <div class="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <span class="hidden md:inline">📍</span>
+                                            <div class="flex items-center gap-2 text-sm leading-5 text-muted-foreground">
+                                                <i class="bi bi-geo-alt hidden text-info md:inline" aria-hidden="true"></i>
                                                 {{ yard.meta.address|capfirst }}, {{ yard.meta.city|capfirst }}, {{ yard.meta.state }}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-3">
-                                        <div class="hidden md:flex px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-base font-medium">
-                                            <span class="hidden mr-2">🚗</span>
+                                        <div class="hidden rounded-md bg-secondary px-4 py-2 text-base font-bold text-secondary-foreground md:flex">
                                             {% if yard.num_results == 1 %}
                                                 1 Vehicle
                                             {% else %}
                                                 {{ yard.num_results }} Vehicles
                                             {% endif %}
                                         </div>
-                                        <svg id="chevron-{{yard.meta.junkyard_id}}" class="w-6 h-6 transition-transform transition-fill chevron" fill="none" stroke="currentColor"   viewBox="0 0 640 640" style="transform: rotate(-180deg);">
-                                            <path d="M480 544C515.3 544 544 515.3 544 480L544 160C544 124.7 515.3 96 480 96L160 96C124.7 96 96 124.7 96 160L96 480C96 515.3 124.7 544 160 544L480 544zM320 416C313.3 416 307 413.2 302.4 408.3L198.4 296.3C191.9 289.3 190.2 279.1 194 270.4C197.8 261.7 206.5 256 216 256L424 256C433.5 256 442.2 261.7 446 270.4C449.8 279.1 448.1 289.3 441.6 296.3L337.6 408.3C333.1 413.2 326.7 416 320 416z"/>
-                                        </svg>
+                                        <i id="chevron-{{yard.meta.junkyard_id}}" class="bi bi-chevron-down text-xl text-muted-foreground transition-transform chevron" style="transform: rotate(-180deg);" aria-hidden="true"></i>
                                     </div>
                                 </div>
                             </div>
@@ -168,7 +169,7 @@
                             <div id="table-{{yard.meta.junkyard_id}}" class="hidden fade-in">
                                 <div class="overflow-x-auto">
                                     <table class="w-full responsive-table">
-                                        <thead class="bg-muted/50" >
+                                        <thead class="bg-muted/60" >
                                             <tr data-yardId="{{yard.meta.junkyard_id}}">
                                                 <th class="px-6 py-3 text-left font-bold text-foreground" onclick="sortInventory(this)" data-isusing="false" data-order="" data-sortBy="year" >
                                                     <span>Year</span>
@@ -346,9 +347,9 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="bg-muted/30 px-6 py-4 border-t border-border">
+                                <div class="border-t border-border bg-muted/30 px-6 py-4">
                                     <p class="text-sm text-muted-foreground">
-                                        Found <span id="found-count-{{ yard.meta.junkyard_id }}" class="font-semibold text-foreground">{{ yard.num_results }}</span> vehicles from {{ yard.meta.name|capfirst }}
+                                        Showing <span id="found-count-{{ yard.meta.junkyard_id }}" class="font-semibold text-foreground">{{ yard.num_results }}</span> vehicles from {{ yard.meta.name|capfirst }}
                                     </p>
                                 </div>
                             </div>
@@ -380,9 +381,11 @@
     {% endblock %}
     {% block extra_scripts %}
         <!-- Leaflet JS -->
-        <script src="{% static 'js/leaflet.js' %}?v={{ tz }}"></script> 
-        {{ yard_data_json|json_script:"yard_data"}}
-        <script src="{% static 'js/plotJunkyards.js' %}?v={{ tz }}" defer></script> 
+        {% if fetched_yard_data|length > 0 %}
+            <script src="{% static 'js/leaflet.js' %}?v={{ tz }}"></script>
+            {{ yard_data_json|json_script:"yard_data"}}
+            <script src="{% static 'js/plotJunkyards.js' %}?v={{ tz }}" defer></script>
+        {% endif %}
         <script>
             function toggleTable(junkyardId, justshow = false) {
                 const table = document.getElementById(`table-${junkyardId}`);

@@ -1,53 +1,106 @@
 {% extends 'yardsearcher/base.html' %}
 
-{% block header %}
-{% endblock %}
+{% block title_text %}ScrapHounds | Multi-yard inventory search{% endblock %}
+
+{% block header %}{% endblock %}
+
 {% block main_content %}
-    <div class="flex flex-col px-4  overflow-y-auto items-center justify-center pt-[10rem] gap-5">
-        <div class="w-12 h-12 rounded bg-primary flex items-center justify-center text-lg lg:text-2xl shadow-lg">
-            🔧
-        </div>
-        <div class="flex flex-col gap-1 mb-1 text-center" >
-            <h1 class="text-3xl lg:text-5xl font-bold text-foreground tracking-tight">
-                Junkyard <span class="text-primary">Finder</span>
-            </h1>
-            <p class="text-sm lg:text-lg text-muted-foreground">Multi-yard inventory search</p>
-        </div>
-        <div class="w-full md:w-3/4 relative flex-1">
-            <form action="{% url 'results_urlpattern'%}" method="get" onsubmit="handleSearchSubmit(this)">
-                <input
-                    type="text"
-                    id="search-input"
-                    name="q"
-                    placeholder="Search by make, model, or year..."
-                    class="w-full pl-4 pr-12 h-14 text-md md:text-lg bg-background border-2 border-border rounded-lg focus:border-primary focus:outline-none transition-colors text-foreground"
-                    required
-                />
-                <button
-                    type="submit"
-                    id="clear-search"
-                    class=" absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                </button>
-            </form>
-        </div>
-    </div>
-{% endblock %}
+    <section class="relative overflow-hidden border-b border-border">
+        <div class="container mx-auto grid min-h-[calc(100vh-9rem)] items-center gap-10 px-4 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:py-20">
+            <div class="max-w-3xl">
+                <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/75 px-3 py-2 text-sm font-semibold text-muted-foreground shadow-soft">
+                    <i class="bi bi-broadcast-pin text-info" aria-hidden="true"></i>
+                    <span>{{ total_yards|default:"4" }} yards indexed{% if latest_scrape %} · updated {{ latest_scrape.scraped_at|timesince }} ago{% endif %}</span>
+                </div>
 
+                <div class="mb-7 flex items-center gap-4">
+                    <span class="flex h-16 w-16 items-center justify-center rounded-lg border border-primary/40 bg-primary text-primary-foreground shadow-soft">
+                        <i class="bi bi-search-heart text-3xl" aria-hidden="true"></i>
+                    </span>
+                    <div>
+                        <p class="text-sm font-bold uppercase tracking-wide text-primary">ScrapHounds</p>
+                        <h1 class="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+                            Find donor vehicles faster.
+                        </h1>
+                    </div>
+                </div>
 
-{% block popup-heading-text %} Manage Junkyards {% endblock %}
-{% block popup-button-text %} Save Changes {% endblock %}
-{% block popup-content %}
-    <div class="d-grid gap-2" style="grid-template-columns: 1fr 1fr;">
-        <div class="form-check d-flex gap-2">
-            <input class="form-check-input" type="checkbox" value="" id="checkDefault">
-            <label class="form-check-label d-flex flex-column" for="checkDefault">
-                <span class="">Joliet U pullit</span>
-                <span>X miles away</span>
-            </label>
+                <p class="mb-8 max-w-2xl text-lg leading-8 text-muted-foreground">
+                    Search local yard inventory from one screen by year, make, model, or range. Built for people who would rather pull parts than chase tabs.
+                </p>
+
+                <form action="{% url 'results_urlpattern'%}" method="get" onsubmit="handleSearchSubmit(this)" class="mb-5">
+                    <label for="search-input" class="sr-only">Search inventory</label>
+                    <div class="flex flex-col gap-3 rounded-lg border-2 border-border bg-card p-3 shadow-soft sm:flex-row">
+                        <div class="relative flex-1">
+                            <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-lg text-muted-foreground" aria-hidden="true"></i>
+                            <input
+                                type="text"
+                                id="search-input"
+                                name="q"
+                                placeholder="Try 1990-2005 Chevy, F-150, Honda..."
+                                class="h-14 w-full rounded-md border-2 border-border bg-background pl-12 pr-4 text-base text-foreground outline-none transition-colors focus:border-primary"
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            class="inline-flex h-14 items-center justify-center gap-2 rounded-md bg-primary px-6 text-base font-extrabold text-primary-foreground transition hover:bg-primary/90"
+                        >
+                            <span>Search</span>
+                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="flex flex-wrap gap-2">
+                    <a href="{% url 'results_urlpattern' %}?q=1940-1999" class="rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground no-underline transition hover:border-primary hover:text-primary">Cars before 2000</a>
+                    <a href="{% url 'results_urlpattern' %}?q=2021-2026" class="rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground no-underline transition hover:border-primary hover:text-primary">Last 5 years</a>
+                    <a href="{% url 'results_urlpattern' %}?q=2016-2026%20ford" class="rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground no-underline transition hover:border-primary hover:text-primary">Recent Fords</a>
+                </div>
+            </div>
+
+            <aside class="rounded-lg border-2 border-border bg-card p-5 shadow-soft">
+                <div class="mb-5 flex items-center justify-between gap-4 border-b border-border pb-5">
+                    <div>
+                        <p class="text-sm font-bold uppercase tracking-wide text-primary">Live Coverage</p>
+                        <h2 class="mt-1 text-2xl font-extrabold text-foreground">Inventory at a glance</h2>
+                    </div>
+                    <span class="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-info">
+                        <i class="bi bi-speedometer2 text-2xl" aria-hidden="true"></i>
+                    </span>
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                    <div class="rounded-lg border border-border bg-background/65 p-4">
+                        <p class="text-sm font-semibold text-muted-foreground">Vehicles</p>
+                        <p class="mt-2 text-3xl font-extrabold text-foreground">{{ total_vehicles|default:"5575" }}</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-background/65 p-4">
+                        <p class="text-sm font-semibold text-muted-foreground">Yards</p>
+                        <p class="mt-2 text-3xl font-extrabold text-foreground">{{ total_yards|default:"4" }}</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-background/65 p-4 sm:col-span-2 lg:col-span-1 xl:col-span-2">
+                        <p class="text-sm font-semibold text-muted-foreground">Refresh status</p>
+                        {% if latest_scrape %}
+                            <p class="mt-2 text-base font-bold text-foreground">{{ latest_scrape.junkyard.name }}</p>
+                            <p class="mt-1 text-sm text-muted-foreground">{{ latest_scrape.get_status_display }} · {{ latest_scrape.scraped_at|timesince }} ago</p>
+                        {% else %}
+                            <p class="mt-2 text-base font-bold text-foreground">Inventory ready</p>
+                            <p class="mt-1 text-sm text-muted-foreground">Search the current yard database.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-5 rounded-lg border border-border bg-secondary/50 p-4">
+                    <p class="text-sm font-semibold text-secondary-foreground">Search tips</p>
+                    <ul class="mt-3 space-y-2 text-sm leading-6 text-muted-foreground">
+                        <li><span class="font-semibold text-foreground">Range:</span> 1990-2005 Toyota</li>
+                        <li><span class="font-semibold text-foreground">Make:</span> Ford, Honda, Chevy</li>
+                        <li><span class="font-semibold text-foreground">Model:</span> Camry, F-150, Accord</li>
+                    </ul>
+                </div>
+            </aside>
         </div>
-    </div>
+    </section>
 {% endblock %}
