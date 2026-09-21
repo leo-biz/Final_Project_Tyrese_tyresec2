@@ -22,6 +22,7 @@ class Command(BaseCommand):
 		for i,yard in enumerate(KNOWN_YARDS):
 			error = ""
 			status = 0
+			yard['id'] = None
 			try:
 				self.stdout.write(f"\n[{i+1}/{len(KNOWN_YARDS)}] {yard['name']}'s vehicles")
 				yard['id'] = get_junkyard_id(yard)
@@ -31,7 +32,7 @@ class Command(BaseCommand):
 				self.stdout.write(self.style.SUCCESS(f"-\tran successfully"))
 				status = 1
 			except Exception as e:
-				error = e
+				error = str(e) or e.__class__.__name__
 				self.stdout.write(self.style.ERROR(f"-\tCan't scrape: {error}"))
 				continue
 			finally:
@@ -42,7 +43,9 @@ class Command(BaseCommand):
 		""" 
 			Upserts or deletes vehicles on Vehicle model 
 		"""
-		assert len(results) > 0
+		if not results:
+			raise ValueError(f"No inventory results returned for {yard['name']}")
+
 		vehicle_instances = []
 		scraped_identifiers = [] # Ex: ['stk0192','stk1111']
 
@@ -72,13 +75,18 @@ class Command(BaseCommand):
                 junkyard_identifier=extract_junkyard_identifier(result),
                 vin=extract_vin(result)
             )
-		except ValueError as e:
+		except (KeyError, TypeError, ValueError) as e:
 			print(f"{e} appeared at this result: {result}")
-			raise ValueError
+			raise
 
 	def upsert_vehicle_instances(self, vehicle_instances):
 		# Upsert list of <Vehicle> instances
-		Vehicle.objects.bulk_create(vehicle_instances, update_conflicts=True, unique_fields=['junkyard_identifier','junkyard'], update_fields=['year','make','model'])
+		Vehicle.objects.bulk_create(
+			vehicle_instances,
+			update_conflicts=True,
+			unique_fields=['junkyard_identifier','junkyard'],
+			update_fields=['year','make','model','available_date','row','space','color','vin'],
+		)
 		self.stdout.write(f"-\t{len(vehicle_instances)} upserted")
 
 	def handle_removed_results(self, scraped_identifiers, junkyard_id):
@@ -92,5 +100,7 @@ class Command(BaseCommand):
 			different_identifiers.delete()
 		
 	def log_scrape_event(self,yard, status, error=""):
+		if yard.get('id') is None:
+			self.stdout.write(self.style.WARNING("-\tskipped scrape log because junkyard is not registered"))
+			return
 		Scrape.objects.create(junkyard_id=yard['id'], error=error, status=status)
-		

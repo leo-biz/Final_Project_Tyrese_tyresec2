@@ -26,7 +26,7 @@ def extract_junkyard_identifier(result):
 		junkyard_identifier = result['stock #']
 	elif 'barCodeNumber' in result.keys():
 		junkyard_identifier = result['barCodeNumber'] # Pnp
-	return junkyard_identifier
+	return str(junkyard_identifier).strip()
 
 def extract_color(result):
 	color = ""
@@ -35,10 +35,11 @@ def extract_color(result):
 	return color
 
 def extract_space(result):
-	space = 0
-	if 'space' in result.keys() and len(result['space']) > 0:
-		space = result['space']
-	return space
+	space = result.get('space', '')
+	try:
+		return int(space) if space not in ('', None) else 0
+	except (TypeError, ValueError):
+		return 0
 
 def extract_date(result, date_format):
 	date = ''
@@ -51,9 +52,7 @@ def extract_date(result, date_format):
 	return datetime.strptime(date, date_format)
 
 def extract_vin(result):
-	vin = ""
-	if 'vin' in result.keys():
-		vin = result['vin']
-		if len(vin) > 17:
-			vin = ""
+	vin = str(result.get('vin', '') or '').strip()
+	if len(vin) > 17:
+		return ""
 	return vin

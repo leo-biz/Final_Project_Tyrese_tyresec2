@@ -16,12 +16,14 @@ class Command(BaseCommand):
 
 	def register_yard(self, yard):
 		junkyard, registered = Junkyard.objects.update_or_create(
-			name=yard['name'], 
-			address=yard['address'], 
-			city=yard['city'], 
-			state=yard['state'],
-			lat=yard['lat'],
-			long=yard['long'],
-			zip_code=yard['zip_code'],	
+			address=yard['address'],
+			defaults={
+				'name': yard['name'],
+				'city': yard['city'],
+				'state': yard['state'],
+				'lat': yard['lat'],
+				'long': yard['long'],
+				'zip_code': yard['zip_code'],
+			},
 		)
 		print(f"\nRegistered {yard['name']}")
