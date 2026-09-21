@@ -160,7 +160,7 @@
                             <!-- Table -->
                             <div id="table-{{yard.meta.junkyard_id}}" class="hidden fade-in">
                                 <div class="overflow-x-auto">
-                                    <table class="w-full">
+                                    <table class="w-full responsive-table">
                                         <thead class="bg-muted/50" >
                                             <tr data-yardId="{{yard.meta.junkyard_id}}">
                                                 <th class="px-6 py-3 text-left font-bold text-foreground" onclick="sortInventory(this)" data-isusing="false" data-order="" data-sortBy="year" >
@@ -310,30 +310,30 @@
                                         <tbody id="tbody-{{yard.meta.junkyard_id}}">
                                             {% for vehicle in yard.results %}
                                                 <tr class="border-t border-border hover:bg-muted/50 transition-colors cursor-pointer group">
-                                                    <td class="px-6 py-3 text-foreground">{{ vehicle.year }}</td>
-                                                    <td class="px-6 py-3 text-foreground">
+                                                    <td data-label="Year" class="px-6 py-3 text-foreground">{{ vehicle.year }}</td>
+                                                    <td data-label="Make" class="px-6 py-3 text-foreground">
                                                         {{ vehicle.make|upper }}
                                                     </td>
-                                                    <td class="px-6 py-3 text-foreground">{{ vehicle.model|upper }}</td>
+                                                    <td data-label="Model" class="px-6 py-3 text-foreground">{{ vehicle.model|upper }}</td>
                                                     {% if vehicle.row > 0 %}
-                                                        <td class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.row }}</td>
+                                                        <td data-label="Row" class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.row }}</td>
                                                     {% else %}
-                                                        <td class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">-</td>
+                                                        <td data-label="Row" class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">-</td>
 
                                                     {% endif %}
                                                     {% if yard.results.last.space and vehicle.space %}
-                                                        <td class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.space }}</td>
+                                                        <td data-label="Space" class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.space }}</td>
                                                     {% elif yard.results.last.space and not vehicle.space %}
-                                                        <td class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">-</td>
+                                                        <td data-label="Space" class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">-</td>
                                                     {% endif %}
                                                     {% if vehicle.vin %}
-                                                        <td class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.vin }}</td>
+                                                        <td data-label="VIN" class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.vin }}</td>
                                                     {% endif %}
                                                     {% if vehicle.color %}
-                                                        <td class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.color }}</td>
+                                                        <td data-label="Color" class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.color }}</td>
                                                     {% endif %}
-                                                    <td class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.available_date }}</td>
-                                                    
+                                                    <td data-label="Entry Date" class="px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors">{{ vehicle.available_date }}</td>
+
                                                 </tr>
                                             {% endfor %}
                                         </tbody>
@@ -452,8 +452,12 @@
                 tr = document.createElement('tr');
                 tr.className = 'border-t border-border hover:bg-muted/50 transition-colors cursor-pointer group';
                 foreground_fields = ['year','make','model'];
+                field_labels = {
+                    year: 'Year', make: 'Make', model: 'Model', row: 'Row',
+                    space: 'Space', vin: 'VIN', color: 'Color', available_date: 'Entry Date',
+                };
                 let td_class = '';
-                valid_fields.map(field => { 
+                valid_fields.map(field => {
                     let td_html = vehicle[field];
                     if (foreground_fields.includes(field)) {
                         // Use this class
@@ -461,7 +465,8 @@
                     } else {
                         td_class = 'px-6 py-3 font-mono text-sm text-muted-foreground group-hover:text-foreground transition-colors';
                     }
-                    tr.innerHTML += `<td class="${td_class}">${td_html}</td>`;
+                    let label = field_labels[field] || field;
+                    tr.innerHTML += `<td data-label="${label}" class="${td_class}">${td_html}</td>`;
                 });
                 return tr
             }
