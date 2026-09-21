@@ -33,7 +33,9 @@
                     </div>
                     <button
                         id="filters-toggle"
-                        class="hidden h-14 px-6 bg-muted border-2 border-border text-foreground rounded-lg hover:bg-muted/80 transition-colors font-semibold"
+                        type="button"
+                        onclick="toggleFiltersPanel()"
+                        class="h-14 px-6 bg-muted border-2 border-border text-foreground rounded-lg hover:bg-muted/80 transition-colors font-semibold"
                     >
                         <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
@@ -49,6 +51,8 @@
                             <h3 class="text-lg font-bold text-foreground">Advanced Filters</h3>
                             <button
                                 id="clear-filters"
+                                type="button"
+                                onclick="clearFilters()"
                                 class="text-sm text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,6 +67,7 @@
                                 <input
                                     type="text"
                                     id="filter-year"
+                                    oninput="applyFilters()"
                                     placeholder="e.g., 2020"
                                     class="w-full px-4 py-2 bg-background border-2 border-border rounded-lg focus:border-primary focus:outline-none"
                                 />
@@ -72,6 +77,7 @@
                                 <input
                                     type="text"
                                     id="filter-make"
+                                    oninput="applyFilters()"
                                     placeholder="e.g., Ford"
                                     class="w-full px-4 py-2 bg-background border-2 border-border rounded-lg focus:border-primary focus:outline-none"
                                 />
@@ -81,6 +87,7 @@
                                 <input
                                     type="text"
                                     id="filter-model"
+                                    oninput="applyFilters()"
                                     placeholder="e.g., F-150"
                                     class="w-full px-4 py-2 bg-background border-2 border-border rounded-lg focus:border-primary focus:outline-none"
                                 />
@@ -341,7 +348,7 @@
                                 </div>
                                 <div class="bg-muted/30 px-6 py-4 border-t border-border">
                                     <p class="text-sm text-muted-foreground">
-                                        Found <span class="font-semibold text-foreground">{{ yard.num_results }}</span> vehicles from {{ yard.meta.name|capfirst }}
+                                        Found <span id="found-count-{{ yard.meta.junkyard_id }}" class="font-semibold text-foreground">{{ yard.num_results }}</span> vehicles from {{ yard.meta.name|capfirst }}
                                     </p>
                                 </div>
                             </div>
@@ -390,6 +397,43 @@
                     chevron.classList.remove('chevron-opened')
                     chevron.style.transform = 'rotate(-180deg)';
                 }
+            }
+
+            function toggleFiltersPanel() {
+                document.getElementById('filters-panel').classList.toggle('hidden');
+            }
+
+            function clearFilters() {
+                document.getElementById('filter-year').value = '';
+                document.getElementById('filter-make').value = '';
+                document.getElementById('filter-model').value = '';
+                applyFilters();
+            }
+
+            function applyFilters() {
+                const year = document.getElementById('filter-year').value.trim().toLowerCase();
+                const make = document.getElementById('filter-make').value.trim().toLowerCase();
+                const model = document.getElementById('filter-model').value.trim().toLowerCase();
+
+                document.querySelectorAll('#inventory-container tbody').forEach(tbody => {
+                    let visibleCount = 0;
+                    tbody.querySelectorAll('tr').forEach(tr => {
+                        const yearText = (tr.querySelector('[data-label="Year"]')?.textContent || '').trim().toLowerCase();
+                        const makeText = (tr.querySelector('[data-label="Make"]')?.textContent || '').trim().toLowerCase();
+                        const modelText = (tr.querySelector('[data-label="Model"]')?.textContent || '').trim().toLowerCase();
+
+                        const show = (!year || yearText.includes(year))
+                            && (!make || makeText.includes(make))
+                            && (!model || modelText.includes(model));
+
+                        tr.classList.toggle('hidden', !show);
+                        if (show) visibleCount++;
+                    });
+
+                    const yardId = tbody.id.replace('tbody-', '');
+                    const foundCountEl = document.getElementById(`found-count-${yardId}`);
+                    if (foundCountEl) foundCountEl.textContent = visibleCount;
+                });
             }
 
         </script>
@@ -489,6 +533,8 @@
                         tbody.removeChild(tbody.firstChild)
                     // Turn vehicles into a table row
                     populateTableBody(tableBody=tbody, vehicles, valid_fields=inventory_keys);
+                    // Re-apply any active filters to the freshly-sorted rows
+                    applyFilters();
 
                 } catch (error) {
                     console.error(` Whoops! rebuildTableBody failed: ${error.message}`);
