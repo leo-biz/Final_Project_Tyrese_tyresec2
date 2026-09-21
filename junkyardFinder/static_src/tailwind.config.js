@@ -43,19 +43,26 @@ module.exports = {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
             colors: {
-                background: 'hsl(218.18deg 16.25% 11.45%)',
-                foreground: 'hsl(0, 0%, 95%)',
-                primary: 'hsl(22, 75%, 50%)',
-                'primary-foreground': 'hsl(0, 0%, 100%)',
-                secondary: 'hsl(0, 0%, 22%)',
-                'secondary-foreground': 'hsl(0, 0%, 95%)',
-                accent: 'hsl(35, 80%, 55%)',
-                muted: 'hsl(218, 12%, 18%)',
-                'muted-foreground': 'hsl(0, 0%, 65%)',
-                border: 'hsl(0, 0%, 28%)',
-                card: 'hsl(218, 15%, 16%)',
-            }
+                background: '#0d1110',
+                foreground: '#f4f1ea',
+                primary: '#f2b84b',
+                'primary-foreground': '#14100a',
+                secondary: '#243733',
+                'secondary-foreground': '#d8efe6',
+                accent: '#dc6746',
+                info: '#68c4b4',
+                muted: '#18201f',
+                'muted-foreground': '#a8b3ae',
+                border: '#2b3733',
+                card: '#131a19',
+            },
+            boxShadow: {
+                soft: '0 18px 55px rgba(0, 0, 0, 0.28)',
+            },
         },
     },
     plugins: [
