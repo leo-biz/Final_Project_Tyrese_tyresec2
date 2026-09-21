@@ -14,7 +14,7 @@
             <p class="text-sm lg:text-lg text-muted-foreground">Multi-yard inventory search</p>
         </div>
         <div class="w-full md:w-3/4 relative flex-1">
-            <form action="{% url 'results_urlpattern'%}" method="get">
+            <form action="{% url 'results_urlpattern'%}" method="get" onsubmit="handleSearchSubmit(this)">
                 <input
                     type="text"
                     id="search-input"

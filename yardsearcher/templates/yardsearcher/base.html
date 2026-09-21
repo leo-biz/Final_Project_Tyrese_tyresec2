@@ -189,6 +189,19 @@
                 setTimeout(function () { siteMessages.remove(); }, 500);
             }, 4000);
         }
+        function handleSearchSubmit(form) {
+            var btn = form.querySelector('button[type="submit"]');
+            var input = form.querySelector('input[type="text"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">'
+                    + '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>'
+                    + '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V4a8 8 0 00-8 8H0a12 12 0 0112-12v4z"></path>'
+                    + '</svg>';
+            }
+            if (input) input.readOnly = true;
+            return true;
+        }
     </script>
     <!-- Global JS files -->
     {% block extra_scripts %}{% endblock %}
