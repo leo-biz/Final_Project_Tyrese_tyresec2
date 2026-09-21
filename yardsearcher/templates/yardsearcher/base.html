@@ -37,6 +37,21 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
         </svg>
     </button>
+    {% if messages %}
+        <div id="site-messages" class="fixed top-4 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 w-[calc(100%-2rem)] max-w-md transition-opacity duration-500">
+            {% for message in messages %}
+                <div class="px-4 py-3 rounded-lg border-2 shadow-soft text-sm font-medium
+                    {% if message.tags == 'error' %}
+                        bg-accent/20 border-accent text-foreground
+                    {% else %}
+                        bg-primary/20 border-primary text-foreground
+                    {% endif %}
+                ">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <div class=" w-full min-h-screen">
         {% block header %}
             <!-- Header -->
@@ -167,6 +182,13 @@
             updateThemeIcon();
         }
         updateThemeIcon();
+        var siteMessages = document.getElementById('site-messages');
+        if (siteMessages) {
+            setTimeout(function () {
+                siteMessages.style.opacity = '0';
+                setTimeout(function () { siteMessages.remove(); }, 500);
+            }, 4000);
+        }
     </script>
     <!-- Global JS files -->
     {% block extra_scripts %}{% endblock %}

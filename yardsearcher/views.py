@@ -1,4 +1,5 @@
 import json
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http.response import HttpResponse, JsonResponse
 from yardsearcher.utils.jup import *
@@ -188,6 +189,7 @@ class ReviewView(TemplateView):
 				email=cleaned_data['email'],
 				rating=cleaned_data['rating'],
 			)
+            messages.success(self.request, "Thanks for your feedback!")
             return redirect('home_urlpattern')
 
         return render(self.request, self.template_name, {'form': form})
