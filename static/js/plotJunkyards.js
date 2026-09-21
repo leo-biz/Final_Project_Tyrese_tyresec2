@@ -8,9 +8,10 @@ var selectedJunkyard = null;
 
 function initMap(){
     map = L.map('map').setView(center = [AVG_LAT, AVG_LONG], 9);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
         minZoom: 2,
-        attribution: '© <a href="https://carto.com/attributions">CARTO</a>'
+        maxZoom: 19,
+        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
       }).addTo(map);
     createMarkers();
 }
@@ -114,58 +115,3 @@ if (document.readyState === 'loading') {
 } else {
     initMap();
 }
-/*
-
-
-
-function initMap(){
-    map = L.map('map').setView(center = [avg_lat, avg_long], 9);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map); 
-    {% for yard in fetched_yard_data %}
-        var junkyard = {
-
-            'lat':{{yard.lat}},
-            'long':{{yard.long}},
-            'name':'{{yard.name}}',
-            'address':'{{yard.meta.address}}',
-            'city':'{{yard.meta.city}}',
-            'state':'{{yard.meta.state}}',
-            'num_results':'{{yard.num_results}}',
-            'id':'{{yard.meta.pk}}',
-
-        };
-        junkyards.push(junkyard);
-        var suffix = junkyard.num_results > 1 ?  " vehicles" : " vehicle";
-        var marker = L.marker([junkyard.lat, junkyard.long], { icon: createMarkerIcon() })
-            .addTo(map);
-        var popupContent = `
-            <div class="p-2 min-w-[200px]">
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="text-lg lg:2xl"></span>
-                </div>
-                <h3 class="font-bold text-base mb-2">${junkyard.name}</h3>
-                <h6 class="text-sm text-muted-foreground">${junkyard.address}</h6>
-                <h6 class="text-sm text-muted-foreground mb-2">${junkyard.city}, ${junkyard.state}</h6>
-                <div class="flex items-center justify-between pt-2">
-                    <button 
-                        onclick="showInventory(${junkyard.id})"
-                        class="text-sm flex-1 px-3 py-1 border-2 border-orange text-primary rounded hover:bg-primary/90 hover:text-white transition-colors"
-                    >
-                        See ${junkyard.num_results + suffix} 
-                    </button>
-                </div>
-            </div>
-        `;
-            
-        marker.bindPopup(popupContent, {
-                permanent: true,
-                direction: 'top',
-                offset: [-3, 10], // Adjust position slightly upwards
-                className: 'custom-tooltip' // Add a custom CSS class
-                });
-    {% endfor %}
-}
-
- */
