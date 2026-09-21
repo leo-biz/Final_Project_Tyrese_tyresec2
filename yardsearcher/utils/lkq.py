@@ -29,7 +29,6 @@ class LKQSearch(YardSearch):
             "Accept": "*/*",
             "Referer": f"https://www.pyp.com/inventory/{params['referer_suffix']}/",
             "X-Requested-With": "XMLHttpRequest",
-            "Accept-Encoding": "gzip, deflate, br",
             "Accept-Language": "en-US,en;q=0.9"
         }
         self.base_params = {}
@@ -82,6 +81,20 @@ class LKQSearch(YardSearch):
         inventory_car['year'] = year_make_model.split(' ')[0]
         inventory_car['make'] = year_make_model.split(' ')[1]
         inventory_car['model'] = year_make_model.split(' ')[2]
+
+        stock = card_html.find(class_="pypvi_stock")
+        if stock:
+            color_stock = stock.get_text(" ", strip=True).split("·")
+            inventory_car["color"] = color_stock[0].strip()
+            if len(color_stock) > 1:
+                inventory_car["stock #"] = color_stock[1].strip()
+
+        for location_cell in card_html.select("table.locate td"):
+            label = location_cell.find("span")
+            value = location_cell.find("b")
+            if label and value:
+                inventory_car[label.get_text(strip=True).lower()] = value.get_text(strip=True)
+
         details = card_html.find_all(class_="pypvi_detailItem")
         #loop through each detail item (color, stock, available inventory_car, etc)
         for detail in details:
@@ -95,23 +108,41 @@ class LKQSearch(YardSearch):
                     else: 
                         item_value = item.next_sibling.strip()
                     inventory_car[field_name] = item_value
+            else:
+                detail_text = detail.get_text(" ", strip=True)
+                if detail_text.startswith("VIN "):
+                    inventory_car["vin"] = detail_text.replace("VIN ", "", 1).strip()
+                elif "Available" in detail_text:
+                    time_elem = detail.find("time")
+                    inventory_car["available"] = time_elem.get_text(strip=True) if time_elem else detail_text.replace("Available", "", 1).strip()
 
   
         return self.convert_car_to_tuple(inventory_car)
 
     def convert_car_to_tuple(self, inventory_car):
-        self.inventory_headers = tuple(inventory_car.keys())
+        self.inventory_headers = (
+            'year',
+            'make',
+            'model',
+            'color',
+            'section',
+            'row',
+            'space',
+            'stock #',
+            'vin',
+            'available',
+        )
         return (
-            inventory_car['year'], 
-            inventory_car['make'],
-            inventory_car['model'],
-            inventory_car['color'],
-            inventory_car['vin'],
-            inventory_car['section'],
-            inventory_car['row'],
-            inventory_car['space'],
-            inventory_car['stock #'],
-            inventory_car['available'],
+            inventory_car.get('year', ''),
+            inventory_car.get('make', ''),
+            inventory_car.get('model', ''),
+            inventory_car.get('color', ''),
+            inventory_car.get('section', ''),
+            inventory_car.get('row', ''),
+            inventory_car.get('space', ''),
+            inventory_car.get('stock #', ''),
+            inventory_car.get('vin', ''),
+            inventory_car.get('available', ''),
         )
         
 
@@ -138,5 +169,3 @@ if __name__ == '__main__':
         yardSearch = LKQSearch(query,{'store_id':1582, 'referer_suffix': 'blue-island-1582'})
         cProfile.run("yardSearch.handle_queries()")
         yardSearch.display_data()
-
-
