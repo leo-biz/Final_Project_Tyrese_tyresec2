@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup
+
 from yardsearcher.utils.base import YardSearch
 
 
@@ -21,17 +23,48 @@ class Jup(YardSearch):
         # Jup requires make & model params
         super().set_url(f"https://www.jolietupullit.com/inventory/?make={make}&model={model}")
         inventory_html_soup = super().fetch_inventory()
-        inventory_table_rows = self.extract_inventory_table_rows(inventory_html_soup)
+        inventory_table_rows = self.extract_inventory_table_rows(
+            inventory_html_soup,
+            suppress_warning=True,
+        )
+        if not inventory_table_rows:
+            inventory_html_soup = self.fetch_inventory_with_browser()
+            inventory_table_rows = self.extract_inventory_table_rows(inventory_html_soup)
         # extract vehicle data matching table rows conditionals  
         self.filter_inventory_table_rows(inventory_table_rows, conditionals)
 
-    def extract_inventory_table_rows(self, inventory_soup):
+    def fetch_inventory_with_browser(self):
+        """
+        Joliet blocks regular Python HTTP clients with 403, but returns the
+        inventory table to a browser. Use Playwright only as a fallback so the
+        normal scraper path stays fast when it works.
+        """
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError as exc:
+            raise RuntimeError("Playwright is required for Joliet browser fallback") from exc
+
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch(
+                headless=True,
+                args=["--disable-dev-shm-usage", "--no-sandbox"],
+            )
+            try:
+                page = browser.new_page(viewport={"width": 1366, "height": 900})
+                page.goto(self.base_url, wait_until="domcontentloaded", timeout=60000)
+                page.wait_for_selector("#cars-table tr", state="attached", timeout=60000)
+                return BeautifulSoup(page.content(), "lxml")
+            finally:
+                browser.close()
+
+    def extract_inventory_table_rows(self, inventory_soup, suppress_warning=False):
         # Grab Jups inventory table (table#cars-table)
         inventory_table = inventory_soup.find(id="cars-table")
         # If the table doesn't exists
         if not inventory_table or not inventory_table.find(['td']):
             # Let it be known
-            print(f"[!] Could not find results for {self.searched_query}")
+            if not suppress_warning:
+                print(f"[!] Could not find results for {self.searched_query}")
             return ''
 
         # If inventory_headers (column names) arent set

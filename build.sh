@@ -5,6 +5,7 @@ export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-scraphounds.settings.pr
 
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+python -m playwright install chromium
 
 pushd junkyardFinder/static_src
 npm ci
