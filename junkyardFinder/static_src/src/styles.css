@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    /* Dark theme is the default look of the app. */
+    :root {
+        --color-background: 13 17 16;
+        --color-foreground: 244 241 234;
+        --color-primary: 242 184 75;
+        --color-primary-foreground: 20 16 10;
+        --color-secondary: 36 55 51;
+        --color-secondary-foreground: 216 239 230;
+        --color-accent: 220 103 70;
+        --color-info: 104 196 180;
+        --color-muted: 24 32 31;
+        --color-muted-foreground: 168 179 174;
+        --color-border: 43 55 51;
+        --color-card: 19 26 25;
+    }
+
+    /* Follow the OS preference when the visitor hasn't picked a theme yet. */
+    @media (prefers-color-scheme: light) {
+        :root:not([data-theme="dark"]) {
+            --color-background: 250 248 243;
+            --color-foreground: 23 21 18;
+            --color-primary: 242 184 75;
+            --color-primary-foreground: 20 16 10;
+            --color-secondary: 228 241 238;
+            --color-secondary-foreground: 31 51 48;
+            --color-accent: 193 79 47;
+            --color-info: 47 143 125;
+            --color-muted: 241 238 230;
+            --color-muted-foreground: 107 116 110;
+            --color-border: 226 221 208;
+            --color-card: 255 255 255;
+        }
+    }
+
+    /* Explicit user choice always wins over the OS preference. */
+    :root[data-theme="light"] {
+        --color-background: 250 248 243;
+        --color-foreground: 23 21 18;
+        --color-primary: 242 184 75;
+        --color-primary-foreground: 20 16 10;
+        --color-secondary: 228 241 238;
+        --color-secondary-foreground: 31 51 48;
+        --color-accent: 193 79 47;
+        --color-info: 47 143 125;
+        --color-muted: 241 238 230;
+        --color-muted-foreground: 107 116 110;
+        --color-border: 226 221 208;
+        --color-card: 255 255 255;
+    }
+}
