@@ -54,4 +54,6 @@ def extract_vin(result):
 	vin = ""
 	if 'vin' in result.keys():
 		vin = result['vin']
+		if len(vin) > 17:
+			vin = ""
 	return vin
