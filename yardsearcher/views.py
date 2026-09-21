@@ -89,7 +89,7 @@ def results_view(request):
 		renders fetched junkyard results to results.html template
 	"""
 	context = {}
-	if request.method == "GET":
+	if request.method in ("GET", "HEAD"):
 		
 		query = request.GET.get('q')
 		t0 = time.time()
