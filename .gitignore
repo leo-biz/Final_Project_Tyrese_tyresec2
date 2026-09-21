@@ -5,4 +5,7 @@ db.sqlite3
 !.env.example
 *.pyc
 *.venv
+venv/
+staticfiles/
+junkyardFinder/static/
 .search_history.txt
